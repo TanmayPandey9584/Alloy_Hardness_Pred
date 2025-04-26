@@ -20,7 +20,7 @@ st.set_page_config(
 # Load the model and selected features
 def load_model():
     try:
-        model_path = '../models/Hardness_Prediction_Model.pkl'
+        model_path = '../models/Hardness_Prediction_Model.json'
         features_path = '../models/Selected_Features.json'
         
         st.write(f"Attempting to load model ")
