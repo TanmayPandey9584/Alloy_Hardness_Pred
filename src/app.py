@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os 
 import matplotlib.pyplot as plt
 import seaborn as sns
 from model_evaluation import (
@@ -20,8 +21,9 @@ st.set_page_config(
 # Load the model and selected features
 def load_model():
     try:
-        model_path = '../models/Hardness_Prediction_Model.json'
-        features_path = '../models/Selected_Features.json'
+        model_path = os.path.join('models', 'Hardness_Prediction_Model.pkl')
+
+        features_path =os.path.join('data', 'train_data.csv')
         
         st.write(f"Attempting to load model ")
         st.write(f"Attempting to load features")
