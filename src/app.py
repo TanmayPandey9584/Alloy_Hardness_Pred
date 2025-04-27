@@ -24,35 +24,128 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Add custom CSS
+# Add custom CSS with improved text colors for better readability
 st.markdown("""
 <style>
+    /* Main text color for better readability */
+    body {
+        color: #333333;
+    }
+    
+    /* Headers */
     .main-header {
         font-size: 2.5rem;
-        color: #1E88E5;
+        color: #1E3A8A;
         text-align: center;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
     }
     .sub-header {
         font-size: 1.5rem;
-        color: #0D47A1;
+        color: #1E3A8A;
+        font-weight: bold;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
     }
+    
+    /* Message boxes */
     .success-msg {
         background-color: #E8F5E9;
-        padding: 10px;
+        padding: 15px;
         border-radius: 5px;
         border-left: 5px solid #4CAF50;
+        color: #1B5E20;
+        margin-bottom: 1rem;
     }
     .info-msg {
         background-color: #E3F2FD;
-        padding: 10px;
+        padding: 15px;
         border-radius: 5px;
         border-left: 5px solid #2196F3;
+        color: #0D47A1;
+        margin-bottom: 1rem;
+    }
+    .warning-msg {
+        background-color: #FFF8E1;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 5px solid #FFC107;
+        color: #FF6F00;
+        margin-bottom: 1rem;
+    }
+    .error-msg {
+        background-color: #FFEBEE;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 5px solid #F44336;
+        color: #B71C1C;
+        margin-bottom: 1rem;
+    }
+    
+    /* Labels and text */
+    label {
+        color: #1E3A8A !important;
+        font-weight: 500 !important;
+    }
+    p {
+        color: #333333;
+        line-height: 1.6;
+    }
+    
+    /* Data tables */
+    .dataframe {
+        color: #333333;
+    }
+    
+    /* Sidebar */
+    .sidebar .sidebar-content {
+        background-color: #F8F9FA;
+    }
+    
+    /* Buttons */
+    .stButton&gt;button {
+        background-color: #1E3A8A;
+        color: white;
+        font-weight: bold;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+    }
+    .stButton&gt;button:hover {
+        background-color: #0D2B76;
+    }
+    
+    /* Number inputs */
+    .stNumberInput input {
+        color: #333333 !important;
+        font-weight: 500;
+    }
+    
+    /* Selectbox */
+    .stSelectbox label {
+        color: #1E3A8A !important;
+    }
+    
+    /* Prediction result */
+    .prediction-result {
+        background-color: #E8F5E9;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    .prediction-value {
+        color: #1E3A8A;
+        font-size: 3rem;
+        font-weight: bold;
+    }
+    .prediction-label {
+        color: #333333;
+        font-size: 1.2rem;
+        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
-
-# Add the current directory to the path to ensure imports work correctly
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def load_model(verbose=False):
     """
@@ -127,12 +220,12 @@ def load_model(verbose=False):
             raise FileNotFoundError("Could not find the features file in any of the expected locations")
         
         if not verbose:
-            st.success(f"✅ Model loaded from {model_path_used}")
-            st.success(f"✅ Features loaded from {feature_path_used}")
+            st.markdown(f"&lt;div class=&#39;success-msg&#39;&gt;✅ Model loaded from {model_path_used}&lt;/div&gt;", unsafe_allow_html=True)
+            st.markdown(f"&lt;div class=&#39;success-msg&#39;&gt;✅ Features loaded from {feature_path_used}&lt;/div&gt;", unsafe_allow_html=True)
             
         return model, selected_features
     except Exception as e:
-        st.error(f"Error loading model or features: {str(e)}")
+        st.markdown(f"&lt;div class=&#39;error-msg&#39;&gt;❌ Error loading model or features: {str(e)}&lt;/div&gt;", unsafe_allow_html=True)
         return None, None
 
 def load_data(verbose=False):
@@ -171,11 +264,11 @@ def load_data(verbose=False):
             raise FileNotFoundError("Could not find the train data file in any of the expected locations")
         
         if not verbose:
-            st.success(f"✅ Training data loaded from {train_path_used}")
+            st.markdown(f"&lt;div class=&#39;success-msg&#39;&gt;✅ Training data loaded from {train_path_used}&lt;/div&gt;", unsafe_allow_html=True)
             
         return train_data
     except Exception as e:
-        st.error(f"Error loading data: {str(e)}")
+        st.markdown(f"&lt;div class=&#39;error-msg&#39;&gt;❌ Error loading data: {str(e)}&lt;/div&gt;", unsafe_allow_html=True)
         return None
 
 # Sidebar for navigation
@@ -186,15 +279,15 @@ page = st.sidebar.radio("Go to", ["Home", "Make Prediction", "Data Exploration",
 debug_mode = st.sidebar.checkbox("Debug Mode", value=False)
 
 if page == "Home":
-    st.markdown("<h1 class='main-header'>Alloy Hardness Prediction System</h1>", unsafe_allow_html=True)
+    st.markdown("&lt;h1 class=&#39;main-header&#39;&gt;Alloy Hardness Prediction System&lt;/h1&gt;", unsafe_allow_html=True)
     
     st.markdown("""
-    <div class='info-msg'>
-    <p>Welcome to the Alloy Hardness Prediction System. This application uses machine learning to predict the hardness of alloys based on their composition and processing parameters.</p>
-    </div>
+    &lt;div class=&#39;info-msg&#39;&gt;
+    &lt;p&gt;Welcome to the Alloy Hardness Prediction System. This application uses machine learning to predict the hardness of alloys based on their composition and processing parameters.&lt;/p&gt;
+    &lt;/div&gt;
     """, unsafe_allow_html=True)
     
-    st.markdown("### How to use this application:")
+    st.markdown("&lt;h3 class=&#39;sub-header&#39;&gt;How to use this application:&lt;/h3&gt;", unsafe_allow_html=True)
     st.markdown("""
     1. **Make Prediction**: Enter the composition and processing parameters of your alloy to get a hardness prediction.
     2. **Data Exploration**: Explore the training data and understand the relationships between different features.
@@ -207,20 +300,20 @@ if page == "Home":
         train_data = load_data(verbose=debug_mode)
     
     if model is not None and train_data is not None:
-        st.markdown("<div class='success-msg'>✅ System is ready for predictions!</div>", unsafe_allow_html=True)
+        st.markdown("&lt;div class=&#39;success-msg&#39;&gt;✅ System is ready for predictions!&lt;/div&gt;", unsafe_allow_html=True)
     else:
-        st.error("❌ Failed to load model or data. Please check the error messages above.")
+        st.markdown("&lt;div class=&#39;error-msg&#39;&gt;❌ Failed to load model or data. Please check the error messages above.&lt;/div&gt;", unsafe_allow_html=True)
 
 elif page == "Make Prediction":
-    st.markdown("<h1 class='main-header'>Make a Hardness Prediction</h1>", unsafe_allow_html=True)
+    st.markdown("&lt;h1 class=&#39;main-header&#39;&gt;Make a Hardness Prediction&lt;/h1&gt;", unsafe_allow_html=True)
     
     # Load model and data
     model, selected_features = load_model(verbose=debug_mode)
     
     if model is None or selected_features is None:
-        st.error("❌ Failed to load model or features. Please check the error messages above.")
+        st.markdown("&lt;div class=&#39;error-msg&#39;&gt;❌ Failed to load model or features. Please check the error messages above.&lt;/div&gt;", unsafe_allow_html=True)
     else:
-        st.markdown("<div class='info-msg'>Enter the values for each feature to get a hardness prediction.</div>", unsafe_allow_html=True)
+        st.markdown("&lt;div class=&#39;info-msg&#39;&gt;Enter the values for each feature to get a hardness prediction.&lt;/div&gt;", unsafe_allow_html=True)
         
         # Create two columns for input fields
         col1, col2 = st.columns(2)
@@ -245,47 +338,47 @@ elif page == "Make Prediction":
             prediction = model.predict(input_df)
             
             # Display prediction with nice formatting
-            st.markdown("<h2 class='sub-header'>Prediction Result</h2>", unsafe_allow_html=True)
+            st.markdown("&lt;h2 class=&#39;sub-header&#39;&gt;Prediction Result&lt;/h2&gt;", unsafe_allow_html=True)
             st.markdown(f"""
-            <div style='background-color: #E8F5E9; padding: 20px; border-radius: 10px; text-align: center;'>
-                <h3>Predicted Hardness (HVN)</h3>
-                <h1 style='color: #2E7D32; font-size: 3rem;'>{prediction[0]:.2f}</h1>
-            </div>
+            &lt;div class=&#39;prediction-result&#39;&gt;
+                &lt;p class=&#39;prediction-label&#39;&gt;Predicted Hardness (HVN)&lt;/p&gt;
+                &lt;p class=&#39;prediction-value&#39;&gt;{prediction[0]:.2f}&lt;/p&gt;
+            &lt;/div&gt;
             """, unsafe_allow_html=True)
 
 elif page == "Data Exploration":
-    st.markdown("<h1 class='main-header'>Data Exploration</h1>", unsafe_allow_html=True)
+    st.markdown("&lt;h1 class=&#39;main-header&#39;&gt;Data Exploration&lt;/h1&gt;", unsafe_allow_html=True)
     
     # Load data
     train_data = load_data(verbose=debug_mode)
     
     if train_data is None:
-        st.error("❌ Failed to load data. Please check the error messages above.")
+        st.markdown("&lt;div class=&#39;error-msg&#39;&gt;❌ Failed to load data. Please check the error messages above.&lt;/div&gt;", unsafe_allow_html=True)
     else:
-        st.markdown("<div class='info-msg'>Explore the training data to understand the relationships between different features.</div>", unsafe_allow_html=True)
+        st.markdown("&lt;div class=&#39;info-msg&#39;&gt;Explore the training data to understand the relationships between different features.&lt;/div&gt;", unsafe_allow_html=True)
         
         # Display data overview
-        st.markdown("<h2 class='sub-header'>Data Overview</h2>", unsafe_allow_html=True)
+        st.markdown("&lt;h2 class=&#39;sub-header&#39;&gt;Data Overview&lt;/h2&gt;", unsafe_allow_html=True)
         st.write(f"Number of samples: {train_data.shape[0]}")
         st.write(f"Number of features: {train_data.shape[1] - 1}")  # Excluding the target variable
         
         # Display first few rows of the data
-        st.markdown("<h2 class='sub-header'>Sample Data</h2>", unsafe_allow_html=True)
+        st.markdown("&lt;h2 class=&#39;sub-header&#39;&gt;Sample Data&lt;/h2&gt;", unsafe_allow_html=True)
         st.dataframe(train_data.head())
         
         # Display statistics
-        st.markdown("<h2 class='sub-header'>Statistical Summary</h2>", unsafe_allow_html=True)
+        st.markdown("&lt;h2 class=&#39;sub-header&#39;&gt;Statistical Summary&lt;/h2&gt;", unsafe_allow_html=True)
         st.dataframe(train_data.describe())
         
         # Correlation heatmap
-        st.markdown("<h2 class='sub-header'>Correlation Heatmap</h2>", unsafe_allow_html=True)
+        st.markdown("&lt;h2 class=&#39;sub-header&#39;&gt;Correlation Heatmap&lt;/h2&gt;", unsafe_allow_html=True)
         fig, ax = plt.subplots(figsize=(10, 8))
         correlation = train_data.corr()
         sns.heatmap(correlation, annot=False, cmap='coolwarm', ax=ax)
         st.pyplot(fig)
         
         # Feature vs Target plots
-        st.markdown("<h2 class='sub-header'>Feature vs Hardness</h2>", unsafe_allow_html=True)
+        st.markdown("&lt;h2 class=&#39;sub-header&#39;&gt;Feature vs Hardness&lt;/h2&gt;", unsafe_allow_html=True)
         
         # Let user select a feature to plot against hardness
         feature_to_plot = st.selectbox("Select a feature to plot against Hardness:", 
@@ -297,12 +390,12 @@ elif page == "Data Exploration":
         st.pyplot(fig)
 
 elif page == "About":
-    st.markdown("<h1 class='main-header'>About the Hardness Prediction Model</h1>", unsafe_allow_html=True)
+    st.markdown("&lt;h1 class=&#39;main-header&#39;&gt;About the Hardness Prediction Model&lt;/h1&gt;", unsafe_allow_html=True)
     
     st.markdown("""
-    <div class='info-msg'>
-    <p>This application uses a machine learning model to predict the hardness of alloys based on their composition and processing parameters.</p>
-    </div>
+    &lt;div class=&#39;info-msg&#39;&gt;
+    &lt;p&gt;This application uses a machine learning model to predict the hardness of alloys based on their composition and processing parameters.&lt;/p&gt;
+    &lt;/div&gt;
     """, unsafe_allow_html=True)
     
     st.markdown("### Model Information:")
