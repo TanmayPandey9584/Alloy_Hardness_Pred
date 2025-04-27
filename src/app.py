@@ -1,9 +1,12 @@
 import os
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
+import json
+import pickle
+import sys
 from model_evaluation import (
     load_model_and_features, 
     evaluate_model, 
@@ -12,6 +15,9 @@ from model_evaluation import (
     plot_error_distribution
 )
 
+# Add the current directory to the path to ensure imports work correctly
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 # Set page configuration
 st.set_page_config(
     page_title="Hardness Prediction Model",
@@ -19,39 +25,126 @@ st.set_page_config(
     layout="wide"
 )
 
-# Load the model and selected features
 def load_model():
+    """
+    Load the trained model and selected features from various possible locations.
+    Returns the model and selected features if successful, None otherwise.
+    """
     try:
-# Always reference from the current working directory
-        model_path = os.path.join('models', 'Hardness_Prediction_Model.pkl')
-
-        features_path =os.path.join('data', 'train_data.csv')
-
+        # Try multiple possible paths for the model
+        model_paths = [
+            'Hardness_Prediction_Model.pkl',
+            '../models/Hardness_Prediction_Model.pkl',
+            'models/Hardness_Prediction_Model.pkl',
+            os.path.join(os.path.dirname(__file__), 'Hardness_Prediction_Model.pkl'),
+            os.path.join(os.path.dirname(__file__), '../models/Hardness_Prediction_Model.pkl'),
+            os.path.join(os.path.dirname(__file__), 'models/Hardness_Prediction_Model.pkl')
+        ]
         
-        st.write(f"Attempting to load model ")
-        st.write(f"Attempting to load features")
+        model = None
+        for path in model_paths:
+            try:
+                st.write(f"Attempting to load model from: {os.path.abspath(path)}")
+                with open(path, 'rb') as file:
+                    model = pickle.load(file)
+                st.write(f"Model loaded successfully from {path}")
+                break
+            except Exception as e:
+                st.write(f"Could not load model from {path}: {str(e)}")
+                continue
         
-        model, selected_features = load_model_and_features(model_path, features_path)
+        if model is None:
+            raise FileNotFoundError("Could not find the model file in any of the expected locations")
         
-        st.write("Model and features loaded successfully")
+        # Try multiple possible paths for the features
+        feature_paths = [
+            'Selected_Features.json',
+            '../models/Selected_Features.json',
+            'models/Selected_Features.json',
+            'Selected_Fearures.json',  # Handle the typo in the original filename
+            '../models/Selected_Fearures.json',
+            'models/Selected_Fearures.json',
+            os.path.join(os.path.dirname(__file__), 'Selected_Features.json'),
+            os.path.join(os.path.dirname(__file__), '../models/Selected_Features.json'),
+            os.path.join(os.path.dirname(__file__), 'models/Selected_Features.json'),
+            os.path.join(os.path.dirname(__file__), 'Selected_Fearures.json'),
+            os.path.join(os.path.dirname(__file__), '../models/Selected_Fearures.json'),
+            os.path.join(os.path.dirname(__file__), 'models/Selected_Fearures.json')
+        ]
+        
+        selected_features = None
+        for path in feature_paths:
+            try:
+                st.write(f"Attempting to load features from: {os.path.abspath(path)}")
+                with open(path, 'r') as f:
+                    selected_features = json.load(f)
+                st.write(f"Features loaded successfully from {path}")
+                break
+            except Exception as e:
+                st.write(f"Could not load features from {path}: {str(e)}")
+                continue
+        
+        if selected_features is None:
+            raise FileNotFoundError("Could not find the features file in any of the expected locations")
+        
         return model, selected_features
     except Exception as e:
         st.error(f"Error loading model or features: {str(e)}")
         return None, None
 
-# Load the data
 def load_data():
+    """
+    Load the training and test data from various possible locations.
+    Returns the train and test data if successful, None otherwise.
+    """
     try:
-        train_path = '../data/train_data.csv'
-        test_path = '../data/test_data.csv'
+        # Try multiple possible paths for the data
+        data_paths = [
+            'train_data.csv',
+            '../data/train_data.csv',
+            'data/train_data.csv',
+            os.path.join(os.path.dirname(__file__), 'train_data.csv'),
+            os.path.join(os.path.dirname(__file__), '../data/train_data.csv'),
+            os.path.join(os.path.dirname(__file__), 'data/train_data.csv')
+        ]
         
-        #st.write(f"Attempting to load train data from: {os.path.abspath(train_path)}")
-        train_data = pd.read_csv(train_path)
-        st.write("Train data loaded successfully")
+        train_data = None
+        for path in data_paths:
+            try:
+                st.write(f"Attempting to load train data from: {os.path.abspath(path)}")
+                train_data = pd.read_csv(path, encoding='ISO-8859-1')
+                st.write(f"Train data loaded successfully from {path}")
+                break
+            except Exception as e:
+                st.write(f"Could not load train data from {path}: {str(e)}")
+                continue
         
-        #st.write(f"Attempting to load test data from: {os.path.abspath(test_path)}")
-        test_data = pd.read_csv(test_path)
-        st.write("Test data loaded successfully")
+        if train_data is None:
+            raise FileNotFoundError("Could not find the train data file in any of the expected locations")
+        
+        # Try multiple possible paths for the test data
+        test_paths = [
+            'test_data.csv',
+            '../data/test_data.csv',
+            'data/test_data.csv',
+            os.path.join(os.path.dirname(__file__), 'test_data.csv'),
+            os.path.join(os.path.dirname(__file__), '../data/test_data.csv'),
+            os.path.join(os.path.dirname(__file__), 'data/test_data.csv')
+        ]
+        
+        test_data = None
+        for path in test_paths:
+            try:
+                st.write(f"Attempting to load test data from: {os.path.abspath(path)}")
+                test_data = pd.read_csv(path, encoding='ISO-8859-1')
+                st.write(f"Test data loaded successfully from {path}")
+                break
+            except Exception as e:
+                st.write(f"Could not load test data from {path}: {str(e)}")
+                continue
+        
+        if test_data is None:
+            st.warning("Could not find the test data file. Proceeding with only train data.")
         
         return train_data, test_data
     except Exception as e:
